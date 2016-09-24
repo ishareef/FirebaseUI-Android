@@ -8,7 +8,7 @@
     <string name="desc_auth_ui">Demonstrates the Firebase Auth UI flow, with customization options.</string>
 
     <!-- strings for Auth UI demo activities -->
-    <eat-comment/>
+    <eat-comment />
     <string name="launch_title">FirebaseUI Auth Demo</string>
     <string name="sign_in">Start</string>
     <string name="green_theme">Green Theme</string>
@@ -42,4 +42,6 @@
     <string name="configuration_required">Configuration is required - see README.md</string>
     <string name="other_options_header">Other Options:</string>
     <string name="enable_smartlock">Enable SmartLock for Passwords</string>
+    <string name="title_activity_chat_list">ChatActivity</string>
+    <string name="action_settings">Settings</string>
 </resources>

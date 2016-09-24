@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.uidemo.R;
+import com.firebase.uidemo.chat.model.ChatMessage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -55,15 +56,21 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
     private DatabaseReference mChatRef;
     private Button mSendButton;
     private EditText mMessageEdit;
+    private String mChatId;
 
     private RecyclerView mMessages;
     private LinearLayoutManager mManager;
-    private FirebaseRecyclerAdapter<Chat, ChatHolder> mRecyclerViewAdapter;
+    private FirebaseRecyclerAdapter<ChatMessage, ChatHolder> mRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        //TODO: Error handling if this is empty
+        mChatId = getIntent().getStringExtra("chat_id");
+        //TODO: Use this to set the activity title
+        String title = getIntent().getStringExtra("chat_title");
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(this);
@@ -72,7 +79,7 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
         mMessageEdit = (EditText) findViewById(R.id.messageEdit);
 
         mRef = FirebaseDatabase.getInstance().getReference();
-        mChatRef = mRef.child("chats");
+        mChatRef = mRef.child("chat_messages");
 
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,8 +87,8 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
                 String uid = mAuth.getCurrentUser().getUid();
                 String name = "User " + uid.substring(0, 6);
 
-                Chat chat = new Chat(name, uid, mMessageEdit.getText().toString());
-                mChatRef.push().setValue(chat, new DatabaseReference.CompletionListener() {
+                ChatMessage message = new ChatMessage(uid, name, mMessageEdit.getText().toString());
+                mChatRef.child(mChatId).push().setValue(message, new DatabaseReference.CompletionListener() {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference reference) {
                         if (databaseError != null) {
@@ -139,17 +146,18 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
     }
 
     private void attachRecyclerViewAdapter() {
-        Query lastFifty = mChatRef.limitToLast(50);
-        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Chat, ChatHolder>(
-                Chat.class, R.layout.message, ChatHolder.class, lastFifty) {
+        //TODO: possibly error handling here?
+        Query lastFifty = mChatRef.child(mChatId).limitToLast(50);
+        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<ChatMessage, ChatHolder>(
+                ChatMessage.class, R.layout.message, ChatHolder.class, lastFifty) {
 
             @Override
-            public void populateViewHolder(ChatHolder chatView, Chat chat, int position) {
-                chatView.setName(chat.getName());
-                chatView.setText(chat.getText());
+            public void populateViewHolder(ChatHolder chatView, ChatMessage message, int position) {
+                chatView.setName(message.getName());
+                chatView.setText(message.getText());
 
                 FirebaseUser currentUser = mAuth.getCurrentUser();
-                if (currentUser != null && chat.getUid().equals(currentUser.getUid())) {
+                if (currentUser != null && message.getUid().equals(currentUser.getUid())) {
                     chatView.setIsSender(true);
                 } else {
                     chatView.setIsSender(false);

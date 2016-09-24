@@ -26,7 +26,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.uidemo.auth.AuthUiActivity;
-import com.firebase.uidemo.database.ChatActivity;
+import com.firebase.uidemo.chat.ChatListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +35,8 @@ import butterknife.OnItemClick;
 public class ChooserActivity extends AppCompatActivity {
 
     private static final Class[] CLASSES = new Class[]{
-            ChatActivity.class,
+            //ChatActivity.class,
+            ChatListActivity.class,
             AuthUiActivity.class,
     };
 
