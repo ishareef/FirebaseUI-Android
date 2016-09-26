@@ -9,7 +9,8 @@ public class UserChat {
     private String title;
     private String lastMessage;
 
-    public UserChat(String title, String message) {
+    public UserChat(String chatId, String title, String message) {
+        this.chatId = chatId;
         this.title = title;
         this.lastMessage = message;
     }

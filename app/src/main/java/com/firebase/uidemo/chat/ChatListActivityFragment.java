@@ -29,12 +29,12 @@ public class ChatListActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
         List<UserChat> listItems = new ArrayList<>();
-        listItems.add(new UserChat("Kshira Nadarajan", "Hi sweetie pie, how are you?"));
-        listItems.add(new UserChat("Nadeem Ahmed", "This is really cool stuff, bro"));
-        listItems.add(new UserChat("Mom", "what's for dinner?"));
-        listItems.add(new UserChat("Dad", "Why is this taking so long!"));
-        listItems.add(new UserChat("Boss", "You an idiot. Hurry up"));
-        listItems.add(new UserChat("Book Club", "Its the best book that I have ever read!"));
+        listItems.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
+        listItems.add(new UserChat("1", "Nadeem Ahmed", "This is really cool stuff, bro"));
+        listItems.add(new UserChat("1", "Mom", "what's for dinner?"));
+        listItems.add(new UserChat("1", "Dad", "Why is this taking so long!"));
+        listItems.add(new UserChat("1", "Boss", "You an idiot. Hurry up"));
+        listItems.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));
 
         ChatListAdapter adapter = new ChatListAdapter(getActivity(), R.layout.fragment_chat_list, listItems);
 

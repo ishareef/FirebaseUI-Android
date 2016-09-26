@@ -14,6 +14,8 @@ import android.widget.ListView;
 
 import com.firebase.uidemo.R;
 import com.firebase.uidemo.chat.adapter.ChatListAdapter;
+import com.firebase.uidemo.chat.model.ChatMessage;
+import com.firebase.uidemo.chat.model.User;
 import com.firebase.uidemo.chat.model.UserChat;
 import com.firebase.uidemo.database.ChatActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -92,14 +94,22 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
         List<UserChat> userChats = new ArrayList<>();
         if (dataSnapshot == null || dataSnapshot.getValue() == null || !dataSnapshot.hasChildren()) {
             Log.e(TAG, "User chats query returned empty snapshot");
-            userChats.add(new UserChat("Kshira Nadarajan", "Hi sweetie pie, how are you?"));
-            userChats.add(new UserChat("Nadeem Ahmed", "This is really cool stuff, bro"));
-            userChats.add(new UserChat("Mom", "what's for dinner?"));
-            userChats.add(new UserChat("Dad", "Why is this taking so long!"));
-            userChats.add(new UserChat("Boss", "You an idiot. Hurry up"));
-            userChats.add(new UserChat("Book Club", "Its the best book that I have ever read!"));
+            userChats.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
+            userChats.add(new UserChat("1", "Nadeem Ahmed", "This is really cool stuff, bro"));
+            userChats.add(new UserChat("1", "Mom", "what's for dinner?"));
+            userChats.add(new UserChat("1", "Dad", "Why is this taking so long!"));
+            userChats.add(new UserChat("1", "Boss", "You an idiot. Hurry up"));
+            userChats.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));
             //create a child for this user
+            //TODO: HACK!! Remove when actual chat can be added
+            FirebaseUser user = mAuth.getCurrentUser();
 
+            String key = mDatabase.child("chats").push().getKey();
+            mDatabase.child("chat_messages").child(key).push().setValue(new ChatMessage(user.getUid(), user.getDisplayName(), "Hello sweetie pie!"));
+            List<UserChat> remoteChats = new ArrayList<>();
+            remoteChats.add(new UserChat(key, "Kshira", "Hello sweetie pie!"));
+
+            mDatabase.child("users").child(user.getUid()).setValue(new User(user.getUid(), user.getDisplayName(), remoteChats));
         }
         Log.e(TAG, "Found dataSnapshot for users");
         for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
