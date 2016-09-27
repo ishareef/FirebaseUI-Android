@@ -10,6 +10,8 @@ public class ChatMessage {
     private String uid;
     private String text;
 
+    public ChatMessage() {}
+
     public ChatMessage(String uid, String name, String text) {
         this.name = name;
         this.uid = uid;

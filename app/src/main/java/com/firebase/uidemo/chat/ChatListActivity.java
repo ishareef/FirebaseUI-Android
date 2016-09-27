@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 import com.firebase.uidemo.R;
 import com.firebase.uidemo.chat.adapter.ChatListAdapter;
+import com.firebase.uidemo.chat.model.Chat;
 import com.firebase.uidemo.chat.model.ChatMessage;
 import com.firebase.uidemo.chat.model.User;
 import com.firebase.uidemo.chat.model.UserChat;
@@ -36,13 +37,14 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
     private ChatListAdapter mChatListAdapter;
+    private boolean mLoggedIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -76,11 +78,12 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
 
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        if (mAuth.getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null && !mLoggedIn) {
             FirebaseUser user = mAuth.getCurrentUser();
             Log.e(TAG, "User logged in: " + user.getEmail());
-            mDatabase.child("users").child(user.getUid()).child("user_chats")
+            mDatabase.child("users").child(user.getUid()).child("chats")
                     .addListenerForSingleValueEvent(this);
+            mLoggedIn = true;
         } else {
             //TODO: redirect to sign-in activity
             //Create Intent and launch activity here;
@@ -94,28 +97,38 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
         List<UserChat> userChats = new ArrayList<>();
         if (dataSnapshot == null || dataSnapshot.getValue() == null || !dataSnapshot.hasChildren()) {
             Log.e(TAG, "User chats query returned empty snapshot");
-            userChats.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
+            /*userChats.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
             userChats.add(new UserChat("1", "Nadeem Ahmed", "This is really cool stuff, bro"));
             userChats.add(new UserChat("1", "Mom", "what's for dinner?"));
             userChats.add(new UserChat("1", "Dad", "Why is this taking so long!"));
             userChats.add(new UserChat("1", "Boss", "You an idiot. Hurry up"));
-            userChats.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));
+            userChats.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));*/
             //create a child for this user
             //TODO: HACK!! Remove when actual chat can be added
-            FirebaseUser user = mAuth.getCurrentUser();
+            final FirebaseUser user = mAuth.getCurrentUser();
 
-            String key = mDatabase.child("chats").push().getKey();
-            mDatabase.child("chat_messages").child(key).push().setValue(new ChatMessage(user.getUid(), user.getDisplayName(), "Hello sweetie pie!"));
-            List<UserChat> remoteChats = new ArrayList<>();
-            remoteChats.add(new UserChat(key, "Kshira", "Hello sweetie pie!"));
+            mDatabase.child("chats").push().setValue(new Chat("Kshira", "Hello sweetie pie!"), new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                    if (databaseError != null) {
+                        Log.e(TAG, "Error while creating chat object: " + databaseError.getMessage());
+                    } else {
+                        String key = databaseReference.getKey();
+                        mDatabase.child("chat_messages").child(key).push().setValue(new ChatMessage(user.getUid(), user.getDisplayName(), "Hello sweetie pie!"));
 
-            mDatabase.child("users").child(user.getUid()).setValue(new User(user.getUid(), user.getDisplayName(), remoteChats));
-        }
-        Log.e(TAG, "Found dataSnapshot for users");
-        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-            UserChat userChat = snapshot.getValue(UserChat.class);
-            if (userChat != null) {
-                userChats.add(userChat);
+                        List<UserChat> remoteChats = new ArrayList<>();
+                        remoteChats.add(new UserChat(key, "Kshira", "Hello sweetie pie!"));
+                        mDatabase.child("users").child(user.getUid()).setValue(new User(user.getUid(), user.getDisplayName(), remoteChats));
+                    }
+                }
+            });
+        } else {
+            Log.e(TAG, "Found dataSnapshot for users");
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                UserChat userChat = snapshot.getValue(UserChat.class);
+                if (userChat != null) {
+                    userChats.add(userChat);
+                }
             }
         }
         mChatListAdapter.addAll(userChats);

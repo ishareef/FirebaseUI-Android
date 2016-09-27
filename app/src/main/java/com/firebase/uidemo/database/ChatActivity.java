@@ -69,6 +69,7 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
 
         //TODO: Error handling if this is empty
         mChatId = getIntent().getStringExtra("chat_id");
+        Log.e(TAG, "chat id: " + mChatId);
         //TODO: Use this to set the activity title
         String title = getIntent().getStringExtra("chat_title");
 
