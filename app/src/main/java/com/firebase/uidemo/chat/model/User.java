@@ -8,6 +8,8 @@ public class User {
     private String name;
     private List<UserChat> chats;
 
+    public User() {}
+
     public User(String uid, String name, List<UserChat> chats) {
         this.uid = uid;
         this.name = name;
