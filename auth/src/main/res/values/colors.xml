@@ -11,7 +11,7 @@
     <color name="linkColor">#4285F4</color>
     <color name="buttonColor">@color/authui_colorPrimary</color>
     <color name="buttonColorPressed">@color/authui_colorActivated</color>
-    <color name="buttonTextColor">#FFFFFF</color>
+    <color name="buttonTextColor">#ffffff</color>
     <color name="inputLabelColor">#757575</color>
     <color name="shadowColor">#eeeeee</color>
 </resources>
