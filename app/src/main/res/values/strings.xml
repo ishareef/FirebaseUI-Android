@@ -42,7 +42,7 @@
     <string name="configuration_required">Configuration is required - see README.md</string>
     <string name="other_options_header">Other Options:</string>
     <string name="enable_smartlock">Enable SmartLock for Passwords</string>
-    <string name="title_activity_chat_list">ChatActivity</string>
+    <string name="title_activity_chat_list">ChatterBox</string>
     <string name="action_settings">Settings</string>
     <string name="search">Search</string>
 </resources>

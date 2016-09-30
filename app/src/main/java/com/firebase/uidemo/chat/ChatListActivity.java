@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -139,6 +138,9 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
                 if (userChat != null) {
                     userChats.add(userChat);
                 }
+            }
+            if (userChats.size() < 2) {
+                userChats.add(new UserChat("1", "Donald Drumpf", "I'm a major moron"));
             }
         }
         mChatListAdapter.addAll(userChats);
