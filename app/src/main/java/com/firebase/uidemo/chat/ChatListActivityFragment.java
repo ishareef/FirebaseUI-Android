@@ -20,6 +20,9 @@ import java.util.List;
  */
 public class ChatListActivityFragment extends Fragment {
 
+
+    private ChatListAdapter mChatListAdapter;
+
     public ChatListActivityFragment() {
     }
 
@@ -28,18 +31,11 @@ public class ChatListActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_chat_list, container, false);
 
-        List<UserChat> listItems = new ArrayList<>();
-        listItems.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
-        listItems.add(new UserChat("1", "Nadeem Ahmed", "This is really cool stuff, bro"));
-        listItems.add(new UserChat("1", "Mom", "what's for dinner?"));
-        listItems.add(new UserChat("1", "Dad", "Why is this taking so long!"));
-        listItems.add(new UserChat("1", "Boss", "You an idiot. Hurry up"));
-        listItems.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));
-
-        ChatListAdapter adapter = new ChatListAdapter(getActivity(), R.layout.fragment_chat_list, listItems);
+        mChatListAdapter = new ChatListAdapter(getActivity(), R.layout.fragment_chat_list, new ArrayList<UserChat>());
+        mChatListAdapter.setNotifyOnChange(true);
 
         ListView listView = (ListView) rootView.findViewById(R.id.chatListView);
-        listView.setAdapter(adapter);
+        listView.setAdapter(mChatListAdapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -49,5 +45,9 @@ public class ChatListActivityFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    public void setAll(List<UserChat> userChats) {
+        mChatListAdapter.addAll(userChats);
     }
 }

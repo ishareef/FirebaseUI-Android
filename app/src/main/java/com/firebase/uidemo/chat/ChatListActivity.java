@@ -15,8 +15,6 @@ import android.widget.ListView;
 
 import com.firebase.uidemo.R;
 import com.firebase.uidemo.chat.adapter.ChatListAdapter;
-import com.firebase.uidemo.chat.model.Chat;
-import com.firebase.uidemo.chat.model.ChatMessage;
 import com.firebase.uidemo.chat.model.User;
 import com.firebase.uidemo.chat.model.UserChat;
 import com.firebase.uidemo.database.ChatActivity;
@@ -40,6 +38,7 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
     private ChatListAdapter mChatListAdapter;
     private boolean mLoggedIn;
 
+    //TODO: change all error logging to debug logging where applicable
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +89,7 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
         if (mAuth.getCurrentUser() != null && !mLoggedIn) {
             FirebaseUser user = mAuth.getCurrentUser();
             Log.e(TAG, "User logged in: " + user.getEmail());
-            mDatabase.child("users").child(user.getUid()).child("chats")
+            mDatabase.child("users").child(user.getUid())
                     .addListenerForSingleValueEvent(this);
             mLoggedIn = true;
         } else {
@@ -100,19 +99,57 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
         }
     }
 
-    //TODO: should this be on another thread? Is it already on another thread?
     @Override
+    public void onDataChange(DataSnapshot dataSnapshot) {
+        if (dataSnapshot == null
+                || dataSnapshot.getValue() == null
+                || !dataSnapshot.hasChildren()) {
+            //first time user
+            setupFirstTimeUser();
+        } else {
+            populateChatList(dataSnapshot.child("chats"));
+        }
+    }
+
+    public void populateChatList(DataSnapshot dataSnapshot) {
+        Log.e(TAG, "Found existing chat list for user");
+        List<UserChat> userChats = new ArrayList<>();
+        if (dataSnapshot != null) {
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                UserChat userChat = snapshot.getValue(UserChat.class);
+                if (userChat != null) {
+                    userChats.add(userChat);
+                }
+            }
+        }
+        if (userChats.size() < 2) {
+            userChats.add(new UserChat("1", "Donald Drumpf", "I'm a major moron"));
+        }
+        mChatListAdapter.addAll(userChats);
+    }
+
+
+    public void setupFirstTimeUser() {
+        //TODO: use completion listeners here to handle errors
+        final FirebaseUser user = mAuth.getCurrentUser();
+        Log.e(TAG, "Setting up user for first time use: " + user.getUid() + " " + user.getEmail());
+        //Add entry in user database
+        mDatabase.child("users").child(user.getUid()).setValue(new User(user.getUid(), user.getDisplayName(), new ArrayList<UserChat>()));
+        //Add entry in user_list database
+        mDatabase.child("user_list").child(user.getUid()).setValue(user.getEmail());
+    }
+
+    @Override
+    public void onCancelled(DatabaseError databaseError) {
+        //TODO: add detailed error logging as well
+        Log.e(TAG, "error while accessing database: " + databaseError.getMessage());
+    }
+
+    /*@Override
     public void onDataChange(DataSnapshot dataSnapshot) {
         List<UserChat> userChats = new ArrayList<>();
         if (dataSnapshot == null || dataSnapshot.getValue() == null || !dataSnapshot.hasChildren()) {
             Log.e(TAG, "User chats query returned empty snapshot");
-            /*userChats.add(new UserChat("1", "Kshira Nadarajan", "Hi sweetie pie, how are you?"));
-            userChats.add(new UserChat("1", "Nadeem Ahmed", "This is really cool stuff, bro"));
-            userChats.add(new UserChat("1", "Mom", "what's for dinner?"));
-            userChats.add(new UserChat("1", "Dad", "Why is this taking so long!"));
-            userChats.add(new UserChat("1", "Boss", "You an idiot. Hurry up"));
-            userChats.add(new UserChat("1", "Book Club", "Its the best book that I have ever read!"));*/
-            //create a child for this user
             //TODO: HACK!! Remove when actual chat can be added
             final FirebaseUser user = mAuth.getCurrentUser();
 
@@ -132,23 +169,7 @@ public class ChatListActivity extends AppCompatActivity implements FirebaseAuth.
                 }
             });
         } else {
-            Log.e(TAG, "Found dataSnapshot for users");
-            for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                UserChat userChat = snapshot.getValue(UserChat.class);
-                if (userChat != null) {
-                    userChats.add(userChat);
-                }
-            }
-            if (userChats.size() < 2) {
-                userChats.add(new UserChat("1", "Donald Drumpf", "I'm a major moron"));
-            }
         }
         mChatListAdapter.addAll(userChats);
-    }
-
-    @Override
-    public void onCancelled(DatabaseError databaseError) {
-        //TODO: add detailed error logging as well
-        Log.e(TAG, "error while accesssing database: " + databaseError.getMessage());
-    }
+    }*/
 }
