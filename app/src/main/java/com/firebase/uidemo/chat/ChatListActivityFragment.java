@@ -1,5 +1,6 @@
 package com.firebase.uidemo.chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.ListView;
 import com.firebase.uidemo.R;
 import com.firebase.uidemo.chat.adapter.ChatListAdapter;
 import com.firebase.uidemo.chat.model.UserChat;
+import com.firebase.uidemo.database.ChatActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,12 @@ public class ChatListActivityFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                //TODO: back button should be added here?
+                UserChat userChat = (UserChat) mChatListAdapter.getItem(position);
+                Intent intent = ChatActivity.createIntent(getActivity());
+                intent.putExtra("chat_id", userChat.getKey());
+                intent.putExtra("chat_title", userChat.getTitle());
+                startActivity(intent);
             }
         });
 

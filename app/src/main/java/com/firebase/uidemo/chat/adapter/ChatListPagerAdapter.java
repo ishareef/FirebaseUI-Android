@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import com.firebase.uidemo.chat.ChatListActivityFragment;
+import com.firebase.uidemo.chat.ContactListActivityFragment;
 
 /**
  * Created by ishareef on 10/1/16.
@@ -16,6 +17,9 @@ public class ChatListPagerAdapter extends FragmentPagerAdapter {
     private static final String[] tabTitles = new String[]{"chats","contacts"};
     private Context context;
 
+    private ChatListActivityFragment mchatListFragment;
+    private ContactListActivityFragment mContactListFragment;
+
     public ChatListPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
@@ -23,10 +27,10 @@ public class ChatListPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if (position == 1) {
-            return new ChatListActivityFragment();
+        if (position == 0) {
+            return mchatListFragment;
         } else {
-
+            return mContactListFragment;
         }
     }
 
@@ -39,6 +43,14 @@ public class ChatListPagerAdapter extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         // Generate title based on item position
         return tabTitles[position];
+    }
+
+    public void setChatListFragment(ChatListActivityFragment chatListFragment) {
+        mchatListFragment = chatListFragment;
+    }
+
+    public void setContactListFragment(ContactListActivityFragment contactListFragment) {
+        mContactListFragment = contactListFragment;
     }
 }
 

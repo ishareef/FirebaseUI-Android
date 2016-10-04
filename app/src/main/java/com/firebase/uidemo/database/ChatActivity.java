@@ -14,6 +14,8 @@
 
 package com.firebase.uidemo.database;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.RotateDrawable;
@@ -36,6 +38,7 @@ import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.uidemo.R;
+import com.firebase.uidemo.auth.SignedInActivity;
 import com.firebase.uidemo.chat.model.ChatMessage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -204,6 +207,12 @@ public class ChatActivity extends AppCompatActivity implements FirebaseAuth.Auth
         // Sending only allowed when signed in
         mSendButton.setEnabled(isSignedIn());
         mMessageEdit.setEnabled(isSignedIn());
+    }
+
+    public static Intent createIntent(Context context) {
+        Intent in = new Intent();
+        in.setClass(context, ChatActivity.class);
+        return in;
     }
 
     public static class Chat {
